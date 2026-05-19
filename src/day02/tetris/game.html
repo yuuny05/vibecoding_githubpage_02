@@ -14,6 +14,7 @@
     <p>아이디를 입력하고 게임을 시작하세요</p>
     <input id="id-input" type="text" maxlength="12" placeholder="아이디 입력" autocomplete="off">
     <button id="start-btn">START</button>
+    <div id="best-preview" class="best-preview"></div>
     <div class="key-hint">
       <span>←</span> <span>→</span> 이동 &nbsp;
       <span>↓</span> 빠르게 &nbsp;
@@ -43,6 +44,10 @@
         <div class="panel-value" id="level-value">1</div>
       </div>
       <div class="panel-box">
+        <div class="panel-label">Best</div>
+        <div class="panel-value" id="best-value">—</div>
+      </div>
+      <div class="panel-box">
         <div class="panel-label-sm">NEXT</div>
         <canvas id="next-canvas" width="120" height="120"></canvas>
       </div>
@@ -57,6 +62,7 @@
       <h2 id="overlay-title">GAME OVER</h2>
       <div class="final-score" id="overlay-score"></div>
       <p id="overlay-sub"></p>
+      <div class="overlay-best" id="overlay-best"></div>
       <button class="overlay-btn" id="overlay-btn">다시 시작</button>
     </div>
   </div>

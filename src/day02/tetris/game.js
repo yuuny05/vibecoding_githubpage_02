@@ -24,6 +24,21 @@ const PIECES = [
 
 const SCORE_TABLE = [0, 100, 300, 500, 800];
 
+// 아이디별 최고점수 캐시 — 탭 내 전역 변수 + localStorage로 재접속 후에도 유지
+const scoreCache = (() => {
+  try { return JSON.parse(localStorage.getItem('tetris_scores') || '{}'); }
+  catch { return {}; }
+})();
+
+function getBest(id) { return scoreCache[id] || 0; }
+
+function saveBest(id, s) {
+  if (s > (scoreCache[id] || 0)) {
+    scoreCache[id] = s;
+    try { localStorage.setItem('tetris_scores', JSON.stringify(scoreCache)); } catch (_) {}
+  }
+}
+
 // DOM
 const startScreen  = document.getElementById('start-screen');
 const gameScreen   = document.getElementById('game-screen');
@@ -38,7 +53,10 @@ const overlay      = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const overlaySub   = document.getElementById('overlay-sub');
+const overlayBest  = document.getElementById('overlay-best');
 const overlayBtn   = document.getElementById('overlay-btn');
+const bestPreview  = document.getElementById('best-preview');
+const bestEl       = document.getElementById('best-value');
 
 const boardCanvas = document.getElementById('board');
 const ctx         = boardCanvas.getContext('2d');
@@ -230,9 +248,15 @@ function endGame() {
   gameOver = true;
   clearTimeout(loopId);
   AudioEngine.stop();
+  const isNewBest = score > getBest(username);
+  saveBest(username, score);
+  const best = getBest(username);
+  bestEl.textContent       = best.toLocaleString();
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = score.toLocaleString() + '점';
   overlaySub.textContent   = username + '님의 최종 점수입니다';
+  overlayBest.textContent  = isNewBest ? '🏆 신기록!' : '최고 점수: ' + best.toLocaleString() + '점';
+  overlayBest.className    = 'overlay-best' + (isNewBest ? ' new-record' : '');
   overlayBtn.textContent   = '다시 시작';
   overlay.classList.add('show');
 }
@@ -264,10 +288,18 @@ startBtn.addEventListener('click', () => {
   const val = idInput.value.trim();
   if (!val) { idInput.focus(); return; }
   username = val;
-  playerName.textContent     = username;
-  startScreen.style.display  = 'none';
-  gameScreen.style.display   = 'flex';
+  playerName.textContent    = username;
+  const prev = getBest(username);
+  bestEl.textContent        = prev > 0 ? prev.toLocaleString() : '—';
+  startScreen.style.display = 'none';
+  gameScreen.style.display  = 'flex';
   startGame();
+});
+
+idInput.addEventListener('input', () => {
+  const val = idInput.value.trim();
+  const prev = val ? getBest(val) : 0;
+  bestPreview.textContent = prev > 0 ? val + '님의 최고 점수: ' + prev.toLocaleString() + '점' : '';
 });
 
 idInput.addEventListener('keydown', e => {

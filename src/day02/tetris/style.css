@@ -413,6 +413,13 @@ body {
   color: #aaa;
 }
 
+.best-preview {
+  min-height: 20px;
+  font-size: 13px;
+  color: #a855f7;
+  letter-spacing: 1px;
+}
+
 .back-link {
   color: #555;
   font-size: 12px;
@@ -558,3 +565,21 @@ canvas {
 }
 
 .overlay-btn:hover { opacity: 0.85; }
+
+.overlay-best {
+  font-size: 14px;
+  color: #888;
+  letter-spacing: 1px;
+}
+
+.overlay-best.new-record {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f7d800;
+  text-shadow: 0 0 12px rgba(247, 216, 0, 0.5);
+}
+
+#best-value {
+  font-size: 20px;
+  color: #a855f7;
+}
