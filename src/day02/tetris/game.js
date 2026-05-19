@@ -1,4 +1,6 @@
+// ─── Game constants ───────────────────────────────────────────────────────────
 const COLS = 10, ROWS = 20, BLOCK = 30;
+const API_BASE = 'http://localhost:8000';
 
 const COLORS = [
   null,
@@ -24,46 +26,248 @@ const PIECES = [
 
 const SCORE_TABLE = [0, 100, 300, 500, 800];
 
-// 아이디별 최고점수 캐시 — 탭 내 전역 변수 + localStorage로 재접속 후에도 유지
-const scoreCache = (() => {
-  try { return JSON.parse(localStorage.getItem('tetris_scores') || '{}'); }
-  catch { return {}; }
-})();
+// ─── Auth / session state ─────────────────────────────────────────────────────
+let authToken  = localStorage.getItem('tetris_token');
+let username   = localStorage.getItem('tetris_nickname') || null;
+let myBest     = 0;
+let globalBestScore  = 0;
+let globalBestPlayer = null;
 
-function getBest(id) { return scoreCache[id] || 0; }
+// ─── API helpers ──────────────────────────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+  Object.assign(headers, opts.headers || {});
+  const res = await fetch(API_BASE + path, { ...opts, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || '서버 오류가 발생했습니다.');
+  return data;
+}
 
-function saveBest(id, s) {
-  if (s > (scoreCache[id] || 0)) {
-    scoreCache[id] = s;
-    try { localStorage.setItem('tetris_scores', JSON.stringify(scoreCache)); } catch (_) {}
+async function apiRegister(email, password, nickname) {
+  return apiFetch('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ email, password, nickname }),
+  });
+}
+
+async function apiLogin(email, password) {
+  return apiFetch('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+async function apiRecordGame(score, level, lines) {
+  return apiFetch('/api/game/record', {
+    method: 'POST',
+    body: JSON.stringify({ score, level, lines }),
+  });
+}
+
+async function apiFetchGlobalBest() {
+  return apiFetch('/api/game/global-best');
+}
+
+async function apiFetchMyBest() {
+  return apiFetch('/api/game/my-best');
+}
+
+// ─── DOM refs ─────────────────────────────────────────────────────────────────
+const authScreen       = document.getElementById('auth-screen');
+const startScreen      = document.getElementById('start-screen');
+const gameScreen       = document.getElementById('game-screen');
+
+const loginEmailEl     = document.getElementById('login-email');
+const loginPasswordEl  = document.getElementById('login-password');
+const loginBtn         = document.getElementById('login-btn');
+const loginError       = document.getElementById('login-error');
+
+const regEmailEl       = document.getElementById('reg-email');
+const regNicknameEl    = document.getElementById('reg-nickname');
+const regPasswordEl    = document.getElementById('reg-password');
+const registerBtn      = document.getElementById('register-btn');
+const registerError    = document.getElementById('register-error');
+
+const loginForm        = document.getElementById('login-form');
+const registerForm     = document.getElementById('register-form');
+
+const welcomeMsg       = document.getElementById('welcome-msg');
+const globalBestBanner = document.getElementById('global-best-banner');
+const bestPreview      = document.getElementById('best-preview');
+const startBtn         = document.getElementById('start-btn');
+const logoutBtn        = document.getElementById('logout-btn');
+
+const playerName       = document.getElementById('player-name');
+const scoreEl          = document.getElementById('score-value');
+const levelEl          = document.getElementById('level-value');
+const bestEl           = document.getElementById('best-value');
+const globalBestEl     = document.getElementById('global-best-value');
+const globalBestPlayerEl = document.getElementById('global-best-player');
+const pauseBtn         = document.getElementById('pause-btn');
+const muteBtn          = document.getElementById('mute-btn');
+
+const overlay          = document.getElementById('overlay');
+const overlayTitle     = document.getElementById('overlay-title');
+const overlayScore     = document.getElementById('overlay-score');
+const overlaySub       = document.getElementById('overlay-sub');
+const overlayBest      = document.getElementById('overlay-best');
+const overlayGlobal    = document.getElementById('overlay-global');
+const overlayBtn       = document.getElementById('overlay-btn');
+
+const boardCanvas      = document.getElementById('board');
+const ctx              = boardCanvas.getContext('2d');
+const nextCanvas       = document.getElementById('next-canvas');
+const nctx             = nextCanvas.getContext('2d');
+
+// ─── Screen transitions ───────────────────────────────────────────────────────
+function showAuth() {
+  authScreen.classList.remove('hidden');
+  startScreen.classList.add('hidden');
+  gameScreen.style.display = 'none';
+  overlay.classList.remove('show');
+}
+
+async function showStart() {
+  authScreen.classList.add('hidden');
+  gameScreen.style.display = 'none';
+  overlay.classList.remove('show');
+
+  welcomeMsg.textContent = username + '님, 환영합니다!';
+  bestPreview.textContent = myBest > 0 ? '내 최고 점수: ' + myBest.toLocaleString() + '점' : '';
+
+  try {
+    const gb = await apiFetchGlobalBest();
+    globalBestScore  = gb.score;
+    globalBestPlayer = gb.nickname;
+    updateGlobalBestDisplay();
+    if (gb.score > 0) {
+      globalBestBanner.textContent =
+        '전체 최고 점수: ' + gb.score.toLocaleString() + '점 — ' + (gb.nickname || '?');
+    } else {
+      globalBestBanner.textContent = '아직 기록이 없습니다. 첫 주인공이 되어보세요!';
+    }
+  } catch (_) {
+    globalBestBanner.textContent = '서버에 연결할 수 없습니다.';
+  }
+
+  startScreen.classList.remove('hidden');
+}
+
+// ─── Global best 패널 업데이트 ────────────────────────────────────────────────
+function updateGlobalBestDisplay() {
+  globalBestEl.textContent = globalBestScore > 0 ? globalBestScore.toLocaleString() : '—';
+  globalBestPlayerEl.textContent = globalBestPlayer || '';
+}
+
+// ─── Auth tab 전환 ───────────────────────────────────────────────────────────
+document.querySelectorAll('.auth-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    loginForm.classList.toggle('hidden', target !== 'login');
+    registerForm.classList.toggle('hidden', target !== 'register');
+    loginError.textContent = '';
+    registerError.textContent = '';
+  });
+});
+
+// ─── 로그인 ──────────────────────────────────────────────────────────────────
+async function handleLogin() {
+  const email    = loginEmailEl.value.trim();
+  const password = loginPasswordEl.value;
+  loginError.textContent = '';
+
+  if (!email || !password) {
+    loginError.textContent = '이메일과 비밀번호를 입력하세요.';
+    return;
+  }
+
+  loginBtn.disabled = true;
+  loginBtn.textContent = '로그인 중…';
+  try {
+    const data = await apiLogin(email, password);
+    authToken = data.access_token;
+    username  = data.nickname;
+    localStorage.setItem('tetris_token',    authToken);
+    localStorage.setItem('tetris_nickname', username);
+
+    const mb = await apiFetchMyBest();
+    myBest = mb.score;
+
+    await showStart();
+  } catch (e) {
+    loginError.textContent = e.message;
+  } finally {
+    loginBtn.disabled = false;
+    loginBtn.textContent = '로그인';
   }
 }
 
-// DOM
-const startScreen  = document.getElementById('start-screen');
-const gameScreen   = document.getElementById('game-screen');
-const idInput      = document.getElementById('id-input');
-const startBtn     = document.getElementById('start-btn');
-const playerName   = document.getElementById('player-name');
-const scoreEl      = document.getElementById('score-value');
-const levelEl      = document.getElementById('level-value');
-const pauseBtn     = document.getElementById('pause-btn');
-const muteBtn      = document.getElementById('mute-btn');
-const overlay      = document.getElementById('overlay');
-const overlayTitle = document.getElementById('overlay-title');
-const overlayScore = document.getElementById('overlay-score');
-const overlaySub   = document.getElementById('overlay-sub');
-const overlayBest  = document.getElementById('overlay-best');
-const overlayBtn   = document.getElementById('overlay-btn');
-const bestPreview  = document.getElementById('best-preview');
-const bestEl       = document.getElementById('best-value');
+loginBtn.addEventListener('click', handleLogin);
+loginEmailEl.addEventListener('keydown', e => { if (e.key === 'Enter') loginPasswordEl.focus(); });
+loginPasswordEl.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
 
-const boardCanvas = document.getElementById('board');
-const ctx         = boardCanvas.getContext('2d');
-const nextCanvas  = document.getElementById('next-canvas');
-const nctx        = nextCanvas.getContext('2d');
+// ─── 회원가입 ────────────────────────────────────────────────────────────────
+async function handleRegister() {
+  const email    = regEmailEl.value.trim();
+  const nickname = regNicknameEl.value.trim();
+  const password = regPasswordEl.value;
+  registerError.textContent = '';
 
-let board, score, level, lines, piece, next, pos, paused, gameOver, loopId, username;
+  if (!email || !nickname || !password) {
+    registerError.textContent = '모든 항목을 입력하세요.';
+    return;
+  }
+
+  registerBtn.disabled = true;
+  registerBtn.textContent = '처리 중…';
+  try {
+    await apiRegister(email, password, nickname);
+    // 가입 성공 → 자동 로그인
+    const data = await apiLogin(email, password);
+    authToken = data.access_token;
+    username  = data.nickname;
+    localStorage.setItem('tetris_token',    authToken);
+    localStorage.setItem('tetris_nickname', username);
+    myBest = 0;
+    await showStart();
+  } catch (e) {
+    registerError.textContent = e.message;
+  } finally {
+    registerBtn.disabled = false;
+    registerBtn.textContent = '회원가입';
+  }
+}
+
+registerBtn.addEventListener('click', handleRegister);
+regPasswordEl.addEventListener('keydown', e => { if (e.key === 'Enter') handleRegister(); });
+
+// ─── 로그아웃 ────────────────────────────────────────────────────────────────
+logoutBtn.addEventListener('click', () => {
+  authToken = null;
+  username  = null;
+  myBest    = 0;
+  localStorage.removeItem('tetris_token');
+  localStorage.removeItem('tetris_nickname');
+  loginEmailEl.value    = '';
+  loginPasswordEl.value = '';
+  showAuth();
+});
+
+// ─── 게임 시작 버튼 ──────────────────────────────────────────────────────────
+startBtn.addEventListener('click', () => {
+  startScreen.classList.add('hidden');
+  gameScreen.style.display = 'flex';
+  playerName.textContent = username;
+  bestEl.textContent     = myBest > 0 ? myBest.toLocaleString() : '—';
+  updateGlobalBestDisplay();
+  startGame();
+});
+
+// ─── 게임 로직 ───────────────────────────────────────────────────────────────
+let board, score, level, lines, piece, next, pos, paused, gameOver, loopId;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -147,6 +351,7 @@ function hardDrop() {
 
 function moveLeft()  { if (!collides(board, piece.shape, pos.x - 1, pos.y)) pos.x--; draw(); }
 function moveRight() { if (!collides(board, piece.shape, pos.x + 1, pos.y)) pos.x++; draw(); }
+
 function rotatePiece() {
   const r = rotate(piece.shape);
   if (!collides(board, r, pos.x, pos.y)) piece.shape = r;
@@ -244,33 +449,64 @@ function startGame() {
   draw();
 }
 
-function endGame() {
+async function endGame() {
   gameOver = true;
   clearTimeout(loopId);
   AudioEngine.stop();
-  const isNewBest = score > getBest(username);
-  saveBest(username, score);
-  const best = getBest(username);
-  bestEl.textContent       = best.toLocaleString();
-  overlayTitle.textContent = 'GAME OVER';
-  overlayScore.textContent = score.toLocaleString() + '점';
-  overlaySub.textContent   = username + '님의 최종 점수입니다';
-  overlayBest.textContent  = isNewBest ? '🏆 신기록!' : '최고 점수: ' + best.toLocaleString() + '점';
-  overlayBest.className    = 'overlay-best' + (isNewBest ? ' new-record' : '');
-  overlayBtn.textContent   = '다시 시작';
+
+  overlayTitle.textContent  = 'GAME OVER';
+  overlayScore.textContent  = score.toLocaleString() + '점';
+  overlaySub.textContent    = username + '님의 최종 점수입니다';
+  overlayBest.textContent   = '점수 저장 중…';
+  overlayBest.className     = 'overlay-best';
+  overlayGlobal.textContent = '';
+  overlayBtn.textContent    = '다시 시작';
   overlay.classList.add('show');
+
+  try {
+    const result = await apiRecordGame(score, level, lines);
+
+    myBest = result.personal_best;
+    bestEl.textContent = myBest > 0 ? myBest.toLocaleString() : '—';
+
+    if (result.is_personal_best && score > 0) {
+      overlayBest.textContent = '🏆 개인 신기록!';
+      overlayBest.className   = 'overlay-best new-record';
+    } else {
+      overlayBest.textContent = '내 최고 점수: ' + myBest.toLocaleString() + '점';
+      overlayBest.className   = 'overlay-best';
+    }
+
+    globalBestScore  = result.global_best;
+    globalBestPlayer = result.global_best_nickname;
+    updateGlobalBestDisplay();
+
+    if (globalBestScore > 0) {
+      const isGlobalChamp = score >= globalBestScore;
+      overlayGlobal.textContent = isGlobalChamp
+        ? '전체 1위!'
+        : '전체 최고: ' + globalBestScore.toLocaleString() + '점 (' + (globalBestPlayer || '?') + ')';
+      overlayGlobal.className = 'overlay-global' + (isGlobalChamp ? ' global-champ' : '');
+    }
+  } catch (e) {
+    overlayBest.textContent = '점수 저장 실패 (' + e.message + ')';
+    overlayBest.className   = 'overlay-best';
+  }
 }
 
+// ─── Pause ────────────────────────────────────────────────────────────────────
 function togglePause() {
   if (gameOver) return;
   paused = !paused;
   pauseBtn.textContent = paused ? '계속하기 (P)' : '일시정지 (P)';
   if (paused) {
     clearTimeout(loopId);
-    overlayTitle.textContent = 'PAUSE';
-    overlayScore.textContent = '';
-    overlaySub.textContent   = 'P 키를 눌러 계속하세요';
-    overlayBtn.textContent   = '계속하기';
+    overlayTitle.textContent  = 'PAUSE';
+    overlayScore.textContent  = '';
+    overlaySub.textContent    = 'P 키를 눌러 계속하세요';
+    overlayBest.textContent   = '';
+    overlayGlobal.textContent = '';
+    overlayBtn.textContent    = '계속하기';
     overlay.classList.add('show');
   } else {
     overlay.classList.remove('show');
@@ -282,29 +518,6 @@ function toggleMute() {
   AudioEngine.setMute(!AudioEngine.isMuted());
   muteBtn.textContent = AudioEngine.isMuted() ? '🔇 음소거 해제 (M)' : '🔊 음소거 (M)';
 }
-
-// 이벤트
-startBtn.addEventListener('click', () => {
-  const val = idInput.value.trim();
-  if (!val) { idInput.focus(); return; }
-  username = val;
-  playerName.textContent    = username;
-  const prev = getBest(username);
-  bestEl.textContent        = prev > 0 ? prev.toLocaleString() : '—';
-  startScreen.style.display = 'none';
-  gameScreen.style.display  = 'flex';
-  startGame();
-});
-
-idInput.addEventListener('input', () => {
-  const val = idInput.value.trim();
-  const prev = val ? getBest(val) : 0;
-  bestPreview.textContent = prev > 0 ? val + '님의 최고 점수: ' + prev.toLocaleString() + '점' : '';
-});
-
-idInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') startBtn.click();
-});
 
 pauseBtn.addEventListener('click', togglePause);
 muteBtn.addEventListener('click', toggleMute);
@@ -332,3 +545,25 @@ document.addEventListener('keydown', e => {
     case 'm': case 'M':       toggleMute();  break;
   }
 });
+
+// ─── 초기화: 저장된 토큰이 있으면 자동 로그인 시도 ───────────────────────────
+(async () => {
+  if (authToken && username) {
+    try {
+      const mb = await apiFetchMyBest();
+      myBest   = mb.score;
+      username = mb.nickname || username;
+      localStorage.setItem('tetris_nickname', username);
+      await showStart();
+    } catch (_) {
+      // 토큰 만료 등 → 로그인 화면으로
+      localStorage.removeItem('tetris_token');
+      localStorage.removeItem('tetris_nickname');
+      authToken = null;
+      username  = null;
+      showAuth();
+    }
+  } else {
+    showAuth();
+  }
+})();

@@ -1,32 +1,43 @@
 # Tetris — yuuny05 day02
 
-브라우저에서 바로 실행할 수 있는 순수 프론트엔드 테트리스 게임입니다.
+이메일 회원가입/로그인 + FastAPI 백엔드 + SQLite DB를 갖춘 테트리스 게임입니다.
 
 ## 파일 구조
 
 ```
 tetris/
-├── index.html   랜딩 페이지 (소개 · 조작법 · 점수표)
-├── game.html    게임 페이지 (아이디 입력 → 플레이)
-├── style.css    전체 스타일 (랜딩 + 게임 통합)
-├── game.js      게임 로직
+├── backend/
+│   ├── main.py          FastAPI 앱 (인증, 점수 기록, 리더보드)
+│   ├── requirements.txt 의존 패키지
+│   └── tetris.db        SQLite DB (자동 생성)
+├── index.html   랜딩 페이지
+├── game.html    게임 페이지 (로그인/회원가입 → 플레이)
+├── style.css    전체 스타일
+├── game.js      게임 로직 + API 연동
 └── audio.js     BGM 엔진 (Web Audio API)
 ```
 
 ## 실행 방법
 
-외부 CSS/JS 파일을 참조하므로 `file://` 직접 열기는 불가합니다.  
-아래 명령으로 로컬 서버를 띄운 뒤 브라우저에서 접속하세요.
+터미널 두 개가 필요합니다.
 
+**① 백엔드 서버 (포트 8000)**
 ```bash
-# tetris/ 디렉터리 안에서 실행
+cd tetris/backend
+python3 -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+**② 프론트엔드 서버 (포트 8765)**
+```bash
+cd tetris
 python3 -m http.server 8765
 ```
 
 | URL | 설명 |
 |-----|------|
 | `http://localhost:8765/` | 랜딩 페이지 |
-| `http://localhost:8765/game.html` | 게임 페이지 |
+| `http://localhost:8765/game.html` | 게임 페이지 (로그인 필요) |
+| `http://localhost:8000/docs` | FastAPI Swagger UI |
 
 WSL 환경이면 Windows 브라우저에서 동일한 URL로 접속합니다.
 
@@ -54,12 +65,27 @@ WSL 환경이면 Windows 브라우저에서 동일한 URL로 접속합니다.
 
 ## 기술 스택
 
-- **HTML / CSS / JavaScript** — 외부 라이브러리 없음
-- **Canvas API** — 게임 보드 및 블록 렌더링
-- **Web Audio API** — 코로베이니키(Korobeiniki) BGM을 오실레이터로 합성
-  - 멜로디: `square` 파형 오실레이터
-  - 베이스: `sine` 파형 오실레이터
-  - 브라우저 정책에 따라 사용자 인터랙션(START 버튼) 이후 재생 시작
+**프론트엔드**
+- HTML / CSS / JavaScript — 외부 라이브러리 없음
+- Canvas API — 게임 보드 및 블록 렌더링
+- Web Audio API — 코로베이니키(Korobeiniki) BGM 합성
+
+**백엔드**
+- FastAPI + uvicorn
+- SQLAlchemy + SQLite (`tetris.db`)
+- passlib[bcrypt] — 비밀번호 해싱
+- python-jose — JWT 토큰 (24시간 유효)
+
+## API 엔드포인트
+
+| Method | URL | 설명 |
+|--------|-----|------|
+| POST | `/api/auth/register` | 이메일 회원가입 |
+| POST | `/api/auth/login` | 로그인 → JWT 반환 |
+| POST | `/api/game/record` | 게임 결과 저장 (인증 필요) |
+| GET  | `/api/game/global-best` | 전체 최고 점수 |
+| GET  | `/api/game/my-best` | 내 최고 점수 (인증 필요) |
+| GET  | `/api/game/leaderboard` | 상위 10명 |
 
 ## 주요 구현 메모
 

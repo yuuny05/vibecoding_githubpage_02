@@ -8,13 +8,42 @@
 </head>
 <body class="game-body">
 
-  <!-- 시작 화면 -->
-  <div id="start-screen">
+  <!-- 인증 화면 -->
+  <div id="auth-screen">
     <h1>TETRIS</h1>
-    <p>아이디를 입력하고 게임을 시작하세요</p>
-    <input id="id-input" type="text" maxlength="12" placeholder="아이디 입력" autocomplete="off">
-    <button id="start-btn">START</button>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">로그인</button>
+      <button class="auth-tab" data-tab="register">회원가입</button>
+    </div>
+
+    <!-- 로그인 폼 -->
+    <div id="login-form" class="auth-form">
+      <input id="login-email" type="email" placeholder="이메일" autocomplete="email">
+      <input id="login-password" type="password" placeholder="비밀번호" autocomplete="current-password">
+      <div id="login-error" class="auth-error"></div>
+      <button id="login-btn" class="auth-submit-btn">로그인</button>
+    </div>
+
+    <!-- 회원가입 폼 -->
+    <div id="register-form" class="auth-form hidden">
+      <input id="reg-email" type="email" placeholder="이메일" autocomplete="email">
+      <input id="reg-nickname" type="text" maxlength="12" placeholder="닉네임 (최대 12자)" autocomplete="off">
+      <input id="reg-password" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="new-password">
+      <div id="register-error" class="auth-error"></div>
+      <button id="register-btn" class="auth-submit-btn">회원가입</button>
+    </div>
+
+    <a href="index.html" class="back-link">← 랜딩 페이지로</a>
+  </div>
+
+  <!-- 게임 준비 화면 (로그인 후) -->
+  <div id="start-screen" class="hidden">
+    <h1>TETRIS</h1>
+    <p id="welcome-msg" class="start-welcome"></p>
+    <div id="global-best-banner" class="global-best-banner"></div>
     <div id="best-preview" class="best-preview"></div>
+    <button id="start-btn">START</button>
     <div class="key-hint">
       <span>←</span> <span>→</span> 이동 &nbsp;
       <span>↓</span> 빠르게 &nbsp;
@@ -23,6 +52,7 @@
       <span>P</span> 정지 &nbsp;
       <span>M</span> 음소거
     </div>
+    <button id="logout-btn" class="logout-btn">로그아웃</button>
     <a href="index.html" class="back-link">← 랜딩 페이지로</a>
   </div>
 
@@ -44,8 +74,13 @@
         <div class="panel-value" id="level-value">1</div>
       </div>
       <div class="panel-box">
-        <div class="panel-label">Best</div>
+        <div class="panel-label">My Best</div>
         <div class="panel-value" id="best-value">—</div>
+      </div>
+      <div class="panel-box">
+        <div class="panel-label">Global Best</div>
+        <div class="panel-value" id="global-best-value">—</div>
+        <div class="panel-label-sm" id="global-best-player"></div>
       </div>
       <div class="panel-box">
         <div class="panel-label-sm">NEXT</div>
@@ -63,6 +98,7 @@
       <div class="final-score" id="overlay-score"></div>
       <p id="overlay-sub"></p>
       <div class="overlay-best" id="overlay-best"></div>
+      <div class="overlay-global" id="overlay-global"></div>
       <button class="overlay-btn" id="overlay-btn">다시 시작</button>
     </div>
   </div>

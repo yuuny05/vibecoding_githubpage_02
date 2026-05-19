@@ -341,12 +341,109 @@ body {
   min-height: 100vh;
 }
 
-/* 시작 화면 */
+/* 공통 유틸 */
+.hidden { display: none !important; }
+
+/* ── 인증 화면 ── */
+#auth-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 320px;
+}
+
+#auth-screen h1 {
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: 8px;
+  background: linear-gradient(135deg, #00d4ff, #a855f7, #ff6b6b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  background: #1e1e2e;
+  border: 1px solid #3b3b5c;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.auth-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 0;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.auth-tab.active {
+  background: #3b3b5c;
+  color: #e0e0ff;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.auth-form input {
+  background: #1e1e2e;
+  border: 2px solid #3b3b5c;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  padding: 11px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.auth-form input:focus { border-color: #a855f7; }
+
+.auth-error {
+  color: #ef4444;
+  font-size: 13px;
+  min-height: 18px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.auth-submit-btn {
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 12px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.auth-submit-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.auth-submit-btn:active { transform: translateY(0); }
+.auth-submit-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+/* ── 게임 준비 화면 ── */
 #start-screen {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
 #start-screen h1 {
@@ -359,26 +456,19 @@ body {
   background-clip: text;
 }
 
-#start-screen p {
-  color: #888;
-  font-size: 14px;
-  letter-spacing: 2px;
+.start-welcome {
+  color: #aaa;
+  font-size: 15px;
+  letter-spacing: 1px;
 }
 
-#id-input {
-  background: #1e1e2e;
-  border: 2px solid #3b3b5c;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 18px;
-  padding: 12px 20px;
-  width: 260px;
-  outline: none;
+.global-best-banner {
+  font-size: 13px;
+  color: #f7d800;
+  letter-spacing: 1px;
   text-align: center;
-  transition: border-color 0.2s;
+  min-height: 18px;
 }
-
-#id-input:focus { border-color: #a855f7; }
 
 #start-btn {
   background: linear-gradient(135deg, #a855f7, #6366f1);
@@ -395,6 +485,20 @@ body {
 
 #start-btn:hover { opacity: 0.85; transform: translateY(-2px); }
 #start-btn:active { transform: translateY(0); }
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid #3b3b5c;
+  border-radius: 8px;
+  color: #555;
+  font-size: 12px;
+  padding: 6px 18px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.logout-btn:hover { border-color: #ef4444; color: #ef4444; }
 
 .key-hint {
   color: #555;
@@ -414,7 +518,7 @@ body {
 }
 
 .best-preview {
-  min-height: 20px;
+  min-height: 18px;
   font-size: 13px;
   color: #a855f7;
   letter-spacing: 1px;
@@ -579,7 +683,34 @@ canvas {
   text-shadow: 0 0 12px rgba(247, 216, 0, 0.5);
 }
 
+.overlay-global {
+  font-size: 13px;
+  color: #666;
+  letter-spacing: 1px;
+}
+
+.overlay-global.global-champ {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f97316;
+  text-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
+}
+
 #best-value {
   font-size: 20px;
   color: #a855f7;
+}
+
+#global-best-value {
+  font-size: 18px;
+  color: #f7d800;
+}
+
+#global-best-player {
+  color: #555;
+  font-size: 11px;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
