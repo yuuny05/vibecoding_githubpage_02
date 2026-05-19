@@ -320,6 +320,68 @@ body {
 
 .level-info strong { color: #e0e0ff; }
 
+/* 리더보드 */
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lb-row {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  background: #1e1e2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 10px;
+  padding: 14px 20px;
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.lb-row:hover {
+  border-color: #3b3b5c;
+  transform: translateX(4px);
+}
+
+.lb-top {
+  border-color: #2a2a4a;
+  background: linear-gradient(90deg, #1e1e2e, #1a1a2e);
+}
+
+.lb-rank {
+  font-size: 20px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.lb-nick {
+  font-size: 15px;
+  color: #e0e0ff;
+  letter-spacing: 0.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-score {
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00d4ff, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+}
+
+.lb-loading, .lb-empty {
+  text-align: center;
+  color: #555;
+  font-size: 14px;
+  padding: 40px 0;
+  letter-spacing: 1px;
+}
+
 /* 푸터 */
 .footer {
   text-align: center;

@@ -155,9 +155,50 @@
 
   <hr class="divider">
 
+  <!-- 리더보드 -->
+  <section class="section">
+    <p class="section-title">LEADERBOARD</p>
+    <h2 class="section-heading">TOP 10</h2>
+    <div class="leaderboard" id="leaderboard">
+      <div class="lb-loading">불러오는 중...</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
   <footer class="footer">
     TETRIS &nbsp;·&nbsp; Web Audio API BGM &nbsp;·&nbsp; yuuny05
   </footer>
 
+  <script>
+    const API = 'http://127.0.0.1:8000';
+    const MEDALS = ['🥇', '🥈', '🥉'];
+    const RANK_COLORS = ['#f7d800', '#aaaaaa', '#f97316'];
+
+    async function loadLeaderboard() {
+      const el = document.getElementById('leaderboard');
+      try {
+        const rows = await fetch(`${API}/api/game/leaderboard`).then(r => r.json());
+        if (!rows.length) {
+          el.innerHTML = '<div class="lb-empty">아직 기록이 없습니다. 첫 번째 도전자가 되세요!</div>';
+          return;
+        }
+        el.innerHTML = rows.map(r => {
+          const medal = r.rank <= 3 ? MEDALS[r.rank - 1] : r.rank;
+          const color = r.rank <= 3 ? RANK_COLORS[r.rank - 1] : '#555';
+          return `
+            <div class="lb-row ${r.rank <= 3 ? 'lb-top' : ''}">
+              <span class="lb-rank" style="color:${color}">${medal}</span>
+              <span class="lb-nick">${r.nickname}</span>
+              <span class="lb-score">${r.score.toLocaleString()}</span>
+            </div>`;
+        }).join('');
+      } catch {
+        el.innerHTML = '<div class="lb-empty">서버에 연결할 수 없습니다.</div>';
+      }
+    }
+
+    loadLeaderboard();
+  </script>
 </body>
 </html>

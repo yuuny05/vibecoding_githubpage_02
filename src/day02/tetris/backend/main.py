@@ -16,8 +16,12 @@ ALGORITHM = "HS256"
 TOKEN_EXPIRE_HOURS = 24
 
 # ─── Database ─────────────────────────────────────────────────────────────────
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tetris.db")
-engine = create_engine(f"sqlite:///{DB_PATH}", connect_args={"check_same_thread": False})
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "mysql+pymysql://tetris:tetrispass@127.0.0.1:3306/tetris?charset=utf8mb4",
+)
+_connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+engine = create_engine(DATABASE_URL, connect_args=_connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
