@@ -760,6 +760,63 @@ html, body {
 .auth-submit:hover  { background: var(--bd-deep); }
 .auth-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  color: var(--bd-mauve);
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bd-hairline);
+}
+
+.auth-social {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.auth-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--bd-pill);
+  border: 1px solid var(--bd-hairline);
+  background: #fff;
+  font-family: var(--bd-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--bd-deep);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.auth-social-btn:hover {
+  background: var(--bd-cream);
+  border-color: var(--bd-mauve);
+}
+.auth-social-btn--github {
+  background: #24292e;
+  border-color: #24292e;
+  color: #fff;
+}
+.auth-social-btn--github:hover {
+  background: #1b1f23;
+  border-color: #1b1f23;
+}
+
 @media (max-width: 480px) {
   .boudoir__main { padding: 20px 14px 20px; }
   .boudoir__title { font-size: 36px; }

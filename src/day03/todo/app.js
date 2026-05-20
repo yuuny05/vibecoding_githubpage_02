@@ -41,7 +41,13 @@ function authErrMsg(msg) {
 function showApp(user) {
   currentUser = user;
   authOverlay.classList.add('is-hidden');
-  if (userEmailEl) userEmailEl.textContent = user.email;
+  if (userEmailEl) {
+    userEmailEl.textContent =
+      user.email ||
+      user.user_metadata?.full_name ||
+      user.user_metadata?.user_name ||
+      '사용자';
+  }
 }
 
 function showAuth() {
@@ -97,6 +103,18 @@ authSubmit.addEventListener('click', handleAuthSubmit);
 [authEmail, authPassword].forEach(el =>
   el.addEventListener('keydown', e => { if (e.key === 'Enter') handleAuthSubmit(); })
 );
+
+async function signInWithProvider(provider) {
+  authError.textContent = '';
+  const { error } = await db.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: window.location.origin + window.location.pathname },
+  });
+  if (error) authError.textContent = authErrMsg(error.message);
+}
+
+document.getElementById('google-login').addEventListener('click', () => signInWithProvider('google'));
+document.getElementById('github-login').addEventListener('click', () => signInWithProvider('github'));
 
 logoutBtn.addEventListener('click', async () => {
   await db.auth.signOut();
