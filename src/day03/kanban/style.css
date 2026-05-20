@@ -1,0 +1,523 @@
+/* ===== CSS 변수 (DESIGN_SYSTEM.md 기반) ===== */
+:root {
+  /* Colors */
+  --color-primary:    #4A90D9;
+  --color-bg:         #F4F6F8;
+  --color-surface:    #FFFFFF;
+  --color-text:       #2D3748;
+  --color-muted:      #718096;
+  --color-border:     #E2E8F0;
+  --color-danger:     #E53E3E;
+  --color-todo:       #4299E1;
+  --color-inprogress: #ECC94B;
+  --color-done:       #48BB78;
+
+  /* Typography */
+  --font-sans:   'Segoe UI', system-ui, sans-serif;
+  --text-sm:     12px;
+  --text-base:   14px;
+  --text-lg:     18px;
+  --text-xl:     24px;
+  --font-normal: 400;
+  --font-bold:   700;
+  --leading:     1.5;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Shadow */
+  --shadow-card:      0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-card-drag: 0 8px 24px rgba(0, 0, 0, 0.18);
+  --shadow-column:    0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-auth-card: 0 4px 24px rgba(0, 0, 0, 0.12);
+
+  /* 인증 */
+  --color-github:      #24292F;
+  --color-github-text: #FFFFFF;
+  --z-overlay:         1000;
+}
+
+/* ===== 리셋 ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== 기본 ===== */
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: var(--leading);
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
+/* ===== 헤더 ===== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-4) var(--space-8);
+  box-shadow: var(--shadow-card);
+}
+
+.app-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text);
+}
+
+/* ===== 보드 ===== */
+.board {
+  display: flex;
+  gap: var(--space-6);
+  align-items: flex-start;
+  padding: var(--space-8);
+  overflow-x: auto;
+}
+
+/* ===== 컬럼 ===== */
+.column {
+  flex: 1;
+  min-width: 260px;
+  background: #F7FAFC;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-column);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: background 0.15s ease, border 0.15s ease;
+  border: 2px solid transparent;
+}
+
+.column.drag-over {
+  background: rgba(74, 144, 217, 0.08);
+  border: 2px dashed var(--color-primary);
+}
+
+/* ===== 컬럼 헤더 ===== */
+.column-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.column-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+#todo        .column-indicator { background: var(--color-todo); }
+#in-progress .column-indicator { background: var(--color-inprogress); }
+#done        .column-indicator { background: var(--color-done); }
+
+.column-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  flex: 1;
+}
+
+.column-count {
+  font-size: var(--text-sm);
+  color: var(--color-surface);
+  background: var(--color-muted);
+  border-radius: 999px;
+  padding: 1px var(--space-2);
+  min-width: 20px;
+  text-align: center;
+}
+
+#todo        .column-count { background: var(--color-todo); }
+#in-progress .column-count { background: var(--color-inprogress); color: var(--color-text); }
+#done        .column-count { background: var(--color-done); }
+
+/* ===== 카드 목록 ===== */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 60px;
+}
+
+/* ===== 카드 ===== */
+.card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-card);
+  cursor: grab;
+  transition: box-shadow 0.15s ease, opacity 0.15s ease;
+  role: listitem;
+}
+
+.card:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card.dragging {
+  opacity: 0.45;
+  box-shadow: var(--shadow-card-drag);
+  cursor: grabbing;
+}
+
+.card-text {
+  font-size: var(--text-base);
+  color: var(--color-text);
+  line-height: var(--leading);
+  flex: 1;
+  word-break: break-word;
+}
+
+/* ===== 삭제 버튼 ===== */
+.btn-delete {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: var(--text-lg);
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.btn-delete:hover {
+  color: var(--color-danger);
+  background: rgba(229, 62, 62, 0.08);
+}
+
+.btn-delete:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== 카드 추가 영역 ===== */
+.add-card {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.card-input {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-input::placeholder {
+  color: var(--color-muted);
+}
+
+.card-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.2);
+}
+
+.btn-add {
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  transition: filter 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-add:hover {
+  filter: brightness(1.1);
+}
+
+.btn-add:active {
+  filter: brightness(0.95);
+}
+
+.btn-add:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 640px) {
+  .board {
+    flex-direction: column;
+    padding: var(--space-4);
+  }
+
+  .column {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+/* ===== 인증 오버레이 ===== */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(45, 55, 72, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.auth-overlay[hidden] {
+  display: none;
+}
+
+/* ===== 인증 카드 ===== */
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: min(400px, calc(100vw - var(--space-8)));
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-auth-card);
+}
+
+.auth-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text);
+  text-align: center;
+  margin: 0;
+}
+
+/* ===== 에러 메시지 ===== */
+.auth-error {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(229, 62, 62, 0.1);
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+.auth-error[hidden] {
+  display: none;
+}
+
+/* ===== 인증 폼 ===== */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.auth-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: var(--color-muted);
+}
+
+.auth-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.2);
+}
+
+.auth-input::placeholder {
+  color: var(--color-muted);
+}
+
+.btn-auth-submit {
+  width: 100%;
+  padding: var(--space-3);
+  margin-top: var(--space-2);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.btn-auth-submit:hover {
+  filter: brightness(1.1);
+}
+
+.btn-auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== 로그인/회원가입 토글 ===== */
+.auth-toggle-text {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.btn-auth-toggle {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.btn-auth-toggle:hover {
+  filter: brightness(1.2);
+}
+
+/* ===== 구분선 ===== */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* ===== OAuth 버튼 영역 ===== */
+.auth-oauth {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.btn-oauth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-oauth:hover {
+  box-shadow: var(--shadow-card);
+  filter: brightness(1.05);
+}
+
+.btn-google {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn-github {
+  background: var(--color-github);
+  color: var(--color-github-text);
+  border-color: var(--color-github);
+}
+
+/* ===== 헤더 사용자 정보 ===== */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.user-info[hidden] {
+  display: none;
+}
+
+.user-email {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-logout {
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-logout:hover {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
