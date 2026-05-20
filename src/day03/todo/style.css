@@ -1,0 +1,775 @@
+/* ============================================================
+   style2.css (Boudoir) — applied to todo list
+   ============================================================ */
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* ---------- Tokens ---------- */
+:root {
+  --bd-cream:    #fdf6f4;
+  --bd-paper:    #faf1ee;
+  --bd-blush:    #f4d8d4;
+  --bd-rose:     #e8c5c1;
+  --bd-mauve:    #c9a8a4;
+  --bd-deep:     #8a6f6b;
+  --bd-ink:      #3d2f2c;
+  --bd-line:     #e3cfcb;
+  --bd-hairline: #ead8d4;
+  --bd-sidebar:  #f6e7e3;
+  --bd-quote-bg: #fffaf8;
+  --bd-tag-movement: #e8c5c1;
+  --bd-tag-ritual:   #efdcd4;
+  --bd-tag-mind:     #e2d3cf;
+  --bd-tag-home:     #ead8c8;
+  --bd-font-display: 'Cormorant Garamond', 'Gowun Batang', serif;
+  --bd-font-body:    'Gowun Batang', 'Cormorant Garamond', serif;
+  --bd-font-script:  'Petit Formal Script', 'Allura', cursive;
+  --bd-font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --bd-sidebar-w: 300px;
+  --bd-radius:    2px;
+  --bd-pill:      999px;
+}
+
+/* ---------- Page shell ---------- */
+.boudoir {
+  font-family: var(--bd-font-body);
+  color: var(--bd-ink);
+  background: var(--bd-paper);
+  display: grid;
+  grid-template-columns: var(--bd-sidebar-w) 1fr;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---------- Sidebar ---------- */
+.boudoir__sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 32px;
+  background: var(--bd-sidebar);
+  border-right: 1px solid var(--bd-line);
+  overflow-y: auto;
+}
+
+.boudoir__corner-motif {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  color: var(--bd-mauve);
+}
+
+.boudoir__brand-script {
+  font-family: var(--bd-font-script);
+  font-size: 36px;
+  line-height: 1;
+  color: var(--bd-deep);
+}
+
+.boudoir__brand-title {
+  font-family: var(--bd-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+  color: var(--bd-ink);
+}
+.boudoir__brand-title .dot { color: var(--bd-mauve); }
+
+.boudoir__brand-caption {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--bd-mauve);
+  margin-top: 10px;
+}
+
+.boudoir__ornament {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--bd-mauve);
+  margin-top: 32px;
+}
+.boudoir__ornament::before,
+.boudoir__ornament::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bd-line);
+}
+
+/* ---------- Collections nav ---------- */
+.boudoir__nav {
+  margin-top: 22px;
+  flex: 1;
+  min-height: 0;
+}
+
+.boudoir__nav-label {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--bd-deep);
+  margin-bottom: 12px;
+}
+
+.boudoir__nav-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.boudoir__nav-item {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 9px 10px;
+  margin: 0 -10px;
+  border: 0;
+  background: transparent;
+  border-radius: var(--bd-radius);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--bd-font-display);
+  transition: background 0.15s;
+}
+.boudoir__nav-item:hover { background: rgba(255,255,255,0.30); }
+.boudoir__nav-item.is-active { background: rgba(255,255,255,0.55); }
+.boudoir__nav-item.is-active::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  background: var(--bd-mauve);
+  border-radius: 50%;
+  transform: translateY(-50%) scale(0.6);
+}
+
+.boudoir__nav-en {
+  font-style: italic;
+  font-size: 21px;
+  color: var(--bd-deep);
+}
+.boudoir__nav-item.is-active .boudoir__nav-en { color: var(--bd-ink); }
+
+.boudoir__nav-kr {
+  font-family: var(--bd-font-body);
+  font-size: 12px;
+  color: var(--bd-deep);
+  opacity: 0.6;
+  margin-left: 8px;
+}
+
+.boudoir__nav-count {
+  font-family: var(--bd-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--bd-mauve);
+}
+
+/* ---------- Sidebar quote ---------- */
+.boudoir__quote {
+  position: relative;
+  margin-top: 18px;
+  padding: 20px 18px;
+  background: var(--bd-quote-bg);
+  border: 1px solid var(--bd-hairline);
+}
+.boudoir__quote-motif {
+  position: absolute;
+  top: -10px;
+  left: 18px;
+  color: var(--bd-rose);
+}
+.boudoir__quote-text {
+  font-family: var(--bd-font-display);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.4;
+  color: var(--bd-ink);
+}
+.boudoir__quote-caption {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bd-mauve);
+  margin-top: 10px;
+}
+
+/* ---------- Main pane ---------- */
+.boudoir__main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 56px 24px;
+  overflow: hidden;
+}
+
+.boudoir__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+.boudoir__date {
+  font-family: var(--bd-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--bd-mauve);
+}
+
+.boudoir__title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.boudoir__title {
+  font-family: var(--bd-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.boudoir__title-kr {
+  font-family: var(--bd-font-script);
+  font-size: 34px;
+  color: var(--bd-mauve);
+}
+
+/* ---------- Progress ---------- */
+.boudoir__progress { text-align: right; }
+.boudoir__progress-label {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--bd-mauve);
+}
+.boudoir__progress-count {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 4px;
+}
+.boudoir__progress-num {
+  font-family: var(--bd-font-display);
+  font-style: italic;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--bd-ink);
+}
+.boudoir__progress-den {
+  font-family: var(--bd-font-display);
+  font-size: 22px;
+  color: var(--bd-mauve);
+}
+.boudoir__progress-bar {
+  position: relative;
+  margin-top: 8px;
+  margin-left: auto;
+  width: 180px;
+  height: 4px;
+  background: #fff;
+  border: 1px solid var(--bd-hairline);
+  border-radius: var(--bd-pill);
+  overflow: hidden;
+}
+.boudoir__progress-bar > i {
+  display: block;
+  height: 100%;
+  background: var(--bd-mauve);
+  transition: width 0.4s;
+}
+
+/* ---------- Filter pills ---------- */
+.boudoir__filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  flex-shrink: 0;
+}
+
+.boudoir__pill {
+  font-family: var(--bd-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: var(--bd-pill);
+  border: 1px solid var(--bd-hairline);
+  background: transparent;
+  color: var(--bd-deep);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.boudoir__pill.is-active {
+  border-color: var(--bd-mauve);
+  background: var(--bd-mauve);
+  color: #fff;
+}
+
+.boudoir__filters-hint {
+  margin-left: auto;
+  font-family: var(--bd-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bd-mauve);
+}
+
+/* ---------- Priority select (in add bar) ---------- */
+#priority-select {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 10px 12px;
+  border-radius: var(--bd-pill);
+  border: 1px solid var(--bd-hairline);
+  background: transparent;
+  color: var(--bd-deep);
+  outline: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ---------- List ---------- */
+.boudoir__list {
+  flex: 1;
+  min-height: 0;
+  margin-top: 22px;
+  overflow-y: auto;
+}
+
+#todo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Group header in list */
+.boudoir__group-header {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--bd-mauve);
+  padding: 20px 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+  transition: background 0.15s;
+  border-radius: var(--bd-radius);
+}
+.boudoir__group-header:first-child { padding-top: 4px; }
+.boudoir__group-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bd-hairline);
+}
+.boudoir__group-header.drag-over {
+  background: rgba(244, 216, 212, 0.45);
+  outline: 1px dashed var(--bd-mauve);
+  outline-offset: 2px;
+}
+
+/* ---------- Row ---------- */
+.boudoir__row {
+  display: grid;
+  grid-template-columns: 20px 60px 24px 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 6px;
+  border-bottom: 1px solid var(--bd-hairline);
+  background: transparent;
+  position: relative;
+  transition: background 0.15s, opacity 0.15s;
+  animation: bd-fade-in-up 220ms ease-out both;
+}
+.boudoir__row[data-drag-state='over']     { background: rgba(244, 216, 212, 0.4); }
+.boudoir__row[data-drag-state='dragging'] { opacity: 0.45; }
+.boudoir__row.drag-over-top    { border-top: 2px solid var(--bd-mauve); }
+.boudoir__row.drag-over-bottom { border-bottom: 2px solid var(--bd-mauve) !important; }
+
+@keyframes bd-fade-in-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.boudoir__handle {
+  cursor: grab;
+  color: var(--bd-mauve);
+  opacity: 0.35;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 0.5;
+  user-select: none;
+}
+.boudoir__handle:active { cursor: grabbing; }
+
+.boudoir__time {
+  font-family: var(--bd-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--bd-deep);
+  opacity: 0.85;
+}
+
+.boudoir__check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.4px solid var(--bd-rose);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.boudoir__check[aria-checked='true'] {
+  border-color: var(--bd-mauve);
+  background: var(--bd-mauve);
+}
+
+.boudoir__text { min-width: 0; }
+.boudoir__text-main {
+  position: relative;
+  display: inline-block;
+  font-family: var(--bd-font-body);
+  font-size: 20px;
+  line-height: 1.25;
+  color: var(--bd-ink);
+  transition: opacity 0.2s;
+}
+
+.boudoir__row.is-done .boudoir__time      { opacity: 0.4; }
+.boudoir__row.is-done .boudoir__text-main { opacity: 0.45; }
+
+.boudoir__row.is-done .boudoir__text-main::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transform-origin: left center;
+  animation: bd-strike 320ms cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes bd-strike {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ---------- Tag ---------- */
+.boudoir__tag {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bd-deep);
+  padding: 5px 10px;
+  border-radius: var(--bd-pill);
+  background: var(--bd-tag-ritual);
+}
+.boudoir__tag[data-tag='movement'] { background: var(--bd-tag-movement); }
+.boudoir__tag[data-tag='ritual']   { background: var(--bd-tag-ritual); }
+.boudoir__tag[data-tag='mind']     { background: var(--bd-tag-mind); }
+
+.boudoir__delete {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  background: transparent;
+  color: var(--bd-mauve);
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 0.35;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.boudoir__delete:hover { opacity: 1; }
+
+/* ---------- Floating add bar ---------- */
+.boudoir__add {
+  flex-shrink: 0;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px 12px 22px;
+  background: #fff;
+  border: 1px solid var(--bd-hairline);
+  border-radius: var(--bd-pill);
+  box-shadow: 0 12px 28px rgba(168, 130, 120, 0.08);
+}
+.boudoir__add-input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-family: var(--bd-font-body);
+  font-size: 17px;
+  color: var(--bd-ink);
+  min-width: 0;
+}
+.boudoir__add-input::placeholder { color: var(--bd-mauve); opacity: 0.7; }
+.boudoir__add-hint {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--bd-mauve);
+  white-space: nowrap;
+}
+.boudoir__add-btn {
+  border: 0;
+  background: var(--bd-mauve);
+  color: #fff;
+  font-family: var(--bd-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  padding: 10px 18px;
+  border-radius: var(--bd-pill);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.boudoir__add-btn:hover { background: var(--bd-deep); }
+
+/* ---------- Responsive (≤ 900px) ---------- */
+@media (max-width: 900px) {
+  .boudoir {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: auto;
+    min-height: 100%;
+    overflow: auto;
+  }
+  .boudoir__sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--bd-line);
+    padding: 28px 24px;
+    overflow: visible;
+  }
+  .boudoir__main {
+    padding: 28px 20px 24px;
+    overflow: visible;
+    height: auto;
+  }
+  .boudoir__title   { font-size: 44px; }
+  .boudoir__list    { overflow: visible; }
+  .boudoir__row     { grid-template-columns: 20px 50px 22px 1fr auto; }
+  .boudoir__tag     { display: none; }
+}
+
+/* ---------- Sidebar user / logout ---------- */
+.boudoir__user {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bd-line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.boudoir__user-email {
+  font-family: var(--bd-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--bd-deep);
+  opacity: 0.7;
+  word-break: break-all;
+}
+.boudoir__logout {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: var(--bd-pill);
+  border: 1px solid var(--bd-line);
+  background: transparent;
+  color: var(--bd-deep);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  align-self: flex-start;
+}
+.boudoir__logout:hover {
+  border-color: var(--bd-mauve);
+  background: rgba(201, 168, 164, 0.12);
+}
+
+/* ---------- Auth overlay ---------- */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bd-cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-overlay.is-hidden { display: none; }
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 52px 48px 48px;
+  background: var(--bd-paper);
+  border: 1px solid var(--bd-hairline);
+  box-shadow: 0 20px 60px rgba(168, 130, 120, 0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-brand-script {
+  font-family: var(--bd-font-script);
+  font-size: 32px;
+  line-height: 1;
+  color: var(--bd-deep);
+}
+.auth-brand-title {
+  font-family: var(--bd-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  margin-top: 2px;
+  color: var(--bd-ink);
+}
+.auth-brand-title .dot { color: var(--bd-mauve); }
+.auth-brand-caption {
+  font-family: var(--bd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--bd-mauve);
+  margin-top: 8px;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  margin-top: 36px;
+  border-bottom: 1px solid var(--bd-hairline);
+  width: 100%;
+}
+.auth-tab {
+  flex: 1;
+  font-family: var(--bd-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: var(--bd-mauve);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.auth-tab.is-active {
+  color: var(--bd-ink);
+  border-bottom-color: var(--bd-mauve);
+}
+
+.auth-form {
+  width: 100%;
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.auth-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--bd-font-mono);
+  font-size: 13px;
+  padding: 12px 16px;
+  border: 1px solid var(--bd-hairline);
+  border-radius: var(--bd-radius);
+  background: #fff;
+  color: var(--bd-ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.auth-input::placeholder { color: var(--bd-mauve); opacity: 0.6; }
+.auth-input:focus { border-color: var(--bd-mauve); }
+
+.auth-error {
+  font-family: var(--bd-font-mono);
+  font-size: 11px;
+  color: #b05a5a;
+  margin: 0;
+  min-height: 16px;
+}
+.auth-message {
+  font-family: var(--bd-font-mono);
+  font-size: 11px;
+  color: var(--bd-deep);
+  margin: 0;
+  min-height: 16px;
+}
+.auth-submit {
+  width: 100%;
+  padding: 13px;
+  border: 0;
+  border-radius: var(--bd-pill);
+  background: var(--bd-mauve);
+  color: #fff;
+  font-family: var(--bd-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+.auth-submit:hover  { background: var(--bd-deep); }
+.auth-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 480px) {
+  .boudoir__main { padding: 20px 14px 20px; }
+  .boudoir__title { font-size: 36px; }
+  .boudoir__title-kr { font-size: 26px; }
+  .boudoir__add {
+    padding: 10px 14px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .boudoir__add-hint { display: none; }
+  .boudoir__add-input { min-width: 100%; order: -1; }
+  .boudoir__progress-bar { width: 120px; }
+}

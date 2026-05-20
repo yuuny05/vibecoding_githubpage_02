@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Gowun+Batang&family=Petit+Formal+Script&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=2" />
+</head>
+<body>
+
+  <!-- ── Auth Overlay ── -->
+  <div id="auth-overlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-brand-script">my</div>
+      <div class="auth-brand-title">Todo<span class="dot">.</span></div>
+      <div class="auth-brand-caption">daily rituals</div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab is-active" data-tab="signin">로그인</button>
+        <button class="auth-tab" data-tab="signup">회원가입</button>
+      </div>
+
+      <div class="auth-form">
+        <input type="email"    id="auth-email"    class="auth-input" placeholder="이메일" />
+        <input type="password" id="auth-password" class="auth-input" placeholder="비밀번호 (6자 이상)" />
+        <p id="auth-error"   class="auth-error"></p>
+        <p id="auth-message" class="auth-message"></p>
+        <button id="auth-submit" class="auth-submit">로그인</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="boudoir">
+
+    <!-- ── Sidebar ── -->
+    <aside class="boudoir__sidebar">
+      <span class="boudoir__corner-motif">✦</span>
+      <div class="boudoir__brand">
+        <div class="boudoir__brand-script">my</div>
+        <div class="boudoir__brand-title">Todo<span class="dot">.</span></div>
+        <div class="boudoir__brand-caption">daily rituals</div>
+      </div>
+      <div class="boudoir__ornament">✦</div>
+      <nav class="boudoir__nav">
+        <div class="boudoir__nav-label">Collections</div>
+        <div class="boudoir__nav-list">
+          <button class="boudoir__nav-item is-active" data-priority="all">
+            <span class="boudoir__nav-en">All</span>
+            <span class="boudoir__nav-kr">전체</span>
+            <span class="boudoir__nav-count" id="count-all">0</span>
+          </button>
+          <button class="boudoir__nav-item" data-priority="high">
+            <span class="boudoir__nav-en">High</span>
+            <span class="boudoir__nav-kr">높음</span>
+            <span class="boudoir__nav-count" id="count-high">0</span>
+          </button>
+          <button class="boudoir__nav-item" data-priority="medium">
+            <span class="boudoir__nav-en">Medium</span>
+            <span class="boudoir__nav-kr">중간</span>
+            <span class="boudoir__nav-count" id="count-medium">0</span>
+          </button>
+          <button class="boudoir__nav-item" data-priority="low">
+            <span class="boudoir__nav-en">Low</span>
+            <span class="boudoir__nav-kr">낮음</span>
+            <span class="boudoir__nav-count" id="count-low">0</span>
+          </button>
+        </div>
+      </nav>
+      <div class="boudoir__quote">
+        <div class="boudoir__quote-motif">❝</div>
+        <div class="boudoir__quote-text">작은 일들이 모여<br>큰 하루가 됩니다.</div>
+        <div class="boudoir__quote-caption">daily reminder</div>
+      </div>
+
+      <div class="boudoir__user">
+        <span class="boudoir__user-email" id="user-email"></span>
+        <button class="boudoir__logout" id="logout-btn">로그아웃</button>
+      </div>
+    </aside>
+
+    <!-- ── Main ── -->
+    <main class="boudoir__main">
+      <header class="boudoir__header">
+        <div>
+          <div class="boudoir__date" id="today-date"></div>
+          <div class="boudoir__title-row">
+            <h1 class="boudoir__title">Todo</h1>
+            <span class="boudoir__title-kr">할일</span>
+          </div>
+        </div>
+        <div class="boudoir__progress">
+          <div class="boudoir__progress-label">완료</div>
+          <div class="boudoir__progress-count">
+            <span class="boudoir__progress-num" id="done-count">0</span>
+            <span class="boudoir__progress-den">/ <span id="total-count">0</span></span>
+          </div>
+          <div class="boudoir__progress-bar"><i id="progress-fill" style="width:0%"></i></div>
+        </div>
+      </header>
+
+      <div class="boudoir__filters">
+        <button class="boudoir__pill is-active" data-filter="all">All</button>
+        <button class="boudoir__pill" data-filter="active">Active</button>
+        <button class="boudoir__pill" data-filter="done">Done</button>
+        <span class="boudoir__filters-hint" id="remaining"></span>
+      </div>
+
+      <div class="boudoir__list">
+        <ul id="todo-list"></ul>
+      </div>
+
+      <div class="boudoir__add">
+        <select id="priority-select">
+          <option value="high">높음</option>
+          <option value="medium" selected>중간</option>
+          <option value="low">낮음</option>
+        </select>
+        <input type="text" id="todo-input" class="boudoir__add-input" placeholder="새로운 할일을 입력하세요..." />
+        <span class="boudoir__add-hint">Enter ↵</span>
+        <button id="add-btn" class="boudoir__add-btn">추가</button>
+      </div>
+    </main>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js?v=2"></script>
+</body>
+</html>
