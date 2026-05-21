@@ -2,9 +2,11 @@
 
 Google / GitHub OAuth 로그인을 기존 Supabase 이메일 인증에 통합합니다.
 
+> **상태: 완료** — 모든 단계 구현 및 GitHub Pages + 로컬 환경 동작 확인
+
 ---
 
-## 현재 상태
+## 구현 전 상태
 
 - Supabase 이메일/비밀번호 인증 완료 (`app.js` — `handleAuthSubmit`)
 - `auth-overlay` UI: 로그인 · 회원가입 탭 + 이메일/비밀번호 입력 폼
@@ -14,14 +16,15 @@ Google / GitHub OAuth 로그인을 기존 Supabase 이메일 인증에 통합합
 
 ## 작업 범위
 
-| # | 대상 | 작업 내용 |
-|---|---|---|
-| 1 | Supabase 콘솔 | Google / GitHub OAuth 공급자 활성화 |
-| 2 | Google Cloud Console | OAuth 2.0 클라이언트 발급 |
-| 3 | GitHub Developer Settings | OAuth App 등록 |
-| 4 | `index.html` | 소셜 로그인 버튼 2개 추가 |
-| 5 | `style.css` | 소셜 버튼 스타일 (브랜드 컬러) |
-| 6 | `app.js` | `signInWithOAuth` 호출 함수 추가 |
+| # | 대상 | 작업 내용 | 상태 |
+|---|---|---|---|
+| 1 | Supabase 콘솔 | Google / GitHub OAuth 공급자 활성화 | ✅ 완료 |
+| 2 | Google Cloud Console | OAuth 2.0 클라이언트 발급 | ✅ 완료 |
+| 3 | GitHub Developer Settings | OAuth App 등록 | ✅ 완료 |
+| 4 | `index.html` | 소셜 로그인 버튼 2개 추가 | ✅ 완료 |
+| 5 | `style.css` | 소셜 버튼 스타일 (boudoir 디자인 적용) | ✅ 완료 |
+| 6 | `app.js` | `signInWithOAuth` 호출 함수 추가 | ✅ 완료 |
+| 7 | Supabase URL Configuration | Site URL · Redirect URLs 등록 | ✅ 완료 |
 
 ---
 
@@ -228,24 +231,43 @@ function showApp(user) {
 
 ---
 
-## 로컬 개발 시 주의사항
+## Step 7 — Supabase URL Configuration (배포 후 필수)
 
-- OAuth redirect URI에 `http://localhost:8765`를 추가해야 로컬에서 동작합니다.
-  - Google Cloud Console → 승인된 리디렉션 URI에 추가
-  - GitHub OAuth App → Authorization callback URL에 `http://localhost:8765` 추가
-- Supabase 대시보드 → **Authentication → URL Configuration → Redirect URLs** 에도 `http://localhost:8765`를 추가합니다.
+**트러블슈팅**: GitHub Pages에서 Google 로그인 클릭 시 `localhost:3000`으로 리다이렉트되는 문제 발생.
+
+**원인**: Supabase의 Site URL이 `http://localhost:3000`으로 설정되어 있어, `redirectTo`가 화이트리스트에 없으면 Site URL로 폴백됨.
+
+**해결**: Supabase 대시보드 → **Authentication → URL Configuration**
+
+| 항목 | 등록 값 |
+|---|---|
+| Site URL | `https://yuuny05.github.io/vibecoding_githubpage_02/src/day03/todo/index.html` |
+| Redirect URLs | `https://yuuny05.github.io/vibecoding_githubpage_02/src/day03/todo/index.html` |
+| Redirect URLs | `http://localhost:8765/index.html` |
+
+> Google Cloud Console / GitHub OAuth App의 Callback URL은 `https://beahwishizeovioqezad.supabase.co/auth/v1/callback` 고정이므로 변경 불필요.
+
+---
+
+## 환경별 동작 확인
+
+| 환경 | URL | 상태 |
+|---|---|---|
+| 로컬 | `http://localhost:8765/index.html` | ✅ 정상 |
+| GitHub Pages | `https://yuuny05.github.io/vibecoding_githubpage_02/src/day03/todo/index.html` | ✅ 정상 |
 
 ---
 
 ## 완료 체크리스트
 
-- [ ] Supabase Google 공급자 활성화
-- [ ] Supabase GitHub 공급자 활성화
-- [ ] Google Cloud Console OAuth 클라이언트 발급 및 redirect URI 등록
-- [ ] GitHub OAuth App 등록 및 Client Secret 발급
-- [ ] `index.html` — 소셜 버튼 추가
-- [ ] `style.css` — 소셜 버튼 스타일 추가
-- [ ] `app.js` — `signInWithProvider` 함수 추가 및 이벤트 연결
-- [ ] `app.js` — `showApp` 표시명 fallback 처리
-- [ ] 로컬 + 배포 환경에서 Google 로그인 테스트
-- [ ] 로컬 + 배포 환경에서 GitHub 로그인 테스트
+- [x] Supabase Google 공급자 활성화
+- [x] Supabase GitHub 공급자 활성화
+- [x] Google Cloud Console OAuth 클라이언트 발급 및 redirect URI 등록
+- [x] GitHub OAuth App 등록 및 Client Secret 발급
+- [x] `index.html` — 소셜 버튼 추가
+- [x] `style.css` — 소셜 버튼 스타일 추가
+- [x] `app.js` — `signInWithProvider` 함수 추가 및 이벤트 연결
+- [x] `app.js` — `showApp` 표시명 fallback 처리
+- [x] Supabase URL Configuration — Site URL · Redirect URLs 등록
+- [x] 로컬 환경에서 Google / GitHub 로그인 테스트
+- [x] GitHub Pages 환경에서 Google / GitHub 로그인 테스트
